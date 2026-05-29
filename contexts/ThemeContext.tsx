@@ -181,17 +181,35 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('es');
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const safeAsyncStorage = {
+    getItem: async (key: string) => {
+      try {
+        return await AsyncStorage.getItem(key);
+      } catch (e) {
+        console.warn('AsyncStorage getItem failed:', e);
+        return null;
+      }
+    },
+    setItem: async (key: string, value: string) => {
+      try {
+        await AsyncStorage.setItem(key, value);
+      } catch (e) {
+        console.warn('AsyncStorage setItem failed:', e);
+      }
+    }
+  };
+
   useEffect(() => {
     (async () => {
       try {
-        const storedTheme = await AsyncStorage.getItem('theme');
-        const storedLang = await AsyncStorage.getItem('language');
+        const storedTheme = await safeAsyncStorage.getItem('theme');
+        const storedLang = await safeAsyncStorage.getItem('language');
         if (storedTheme === 'light' || storedTheme === 'dark')
           setTheme(storedTheme);
         if (storedLang === 'es' || storedLang === 'en')
           setLanguageState(storedLang);
       } catch (e) {
-        /* ignore */
+        console.warn('Theme init failed:', e);
       }
       setIsLoaded(true);
     })();
@@ -200,19 +218,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     setTheme((prev) => {
       const next = prev === 'light' ? 'dark' : 'light';
-      AsyncStorage.setItem('theme', next);
+      safeAsyncStorage.setItem('theme', next);
       return next;
     });
   };
 
   const setThemeDirectly = (newTheme: Theme) => {
     setTheme(newTheme);
-    AsyncStorage.setItem('theme', newTheme);
+    safeAsyncStorage.setItem('theme', newTheme);
   };
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    AsyncStorage.setItem('language', lang);
+    safeAsyncStorage.setItem('language', lang);
   };
 
   const colors = theme === 'light' ? lightColors : darkColors;

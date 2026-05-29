@@ -1,8 +1,7 @@
-import { Tabs } from 'expo-router';
-import { Chrome as Home, MapPin, Clock, User, Wallet, Radio } from 'lucide-react-native';
+import { Tabs, Redirect } from 'expo-router';
+import { Home, MapPin, Clock, User, Wallet, Radio } from 'lucide-react-native';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Redirect } from 'expo-router';
 
 export default function TabLayout() {
   const { user } = useAuth();

@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   Alert,
   Switch,
 } from 'react-native';
@@ -146,7 +144,6 @@ export default function ProfileScreen() {
   };
 
   return (
-
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Profile Header */}
@@ -168,9 +165,8 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Theme & Language Selectors (only for user, at top) */}
-        {user?.role !== 'admin' && (
-          <View style={[styles.section, { marginTop: 10 }]}>
+        {/* Theme & Language */}
+        <View style={[styles.section, { marginTop: 10 }]}>
             <View style={[styles.settingsContainer, { backgroundColor: colors.card }]}>
               {/* Tema */}
               <View style={[styles.settingCard, { borderBottomColor: colors.border }]}>
@@ -236,7 +232,6 @@ export default function ProfileScreen() {
               </View>
             </View>
           </View>
-        )}
 
         {/* Stats */}
         <View style={styles.section}>
@@ -372,76 +367,6 @@ export default function ProfileScreen() {
               <Text style={[styles.safetyDescription, { color: colors.textSecondary }]}>
                 Notificaciones cuando el tranvía se acerque a tu ubicación
               </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* App Settings */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>Configuración</Text>
-          <View style={[styles.settingsContainer, { backgroundColor: colors.card }]}>
-            <View style={[styles.settingCard, { borderBottomColor: colors.border }]}>
-              <View style={styles.settingHeader}>
-                <View style={styles.settingIcon}>
-                  {theme === 'light' ? '🌙' : '☀️'}
-                </View>
-                <Text style={[styles.settingTitle, { color: colors.text }]}>{t('profile.darkMode')}</Text>
-                <Switch
-                  value={theme === 'dark'}
-                  onValueChange={toggleTheme}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={theme === 'dark' ? '#FFFFFF' : '#666'}
-                />
-              </View>
-              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
-                {theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-              </Text>
-            </View>
-
-            <View style={[styles.settingCard, { borderBottomColor: colors.border }]}>
-              <View style={styles.settingHeader}>
-                <View style={styles.settingIcon}>
-                  🌐
-                </View>
-                <Text style={[styles.settingTitle, { color: colors.text }]}>{t('profile.language')}</Text>
-              </View>
-              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
-                Selecciona tu idioma preferido
-              </Text>
-              <View style={styles.languageButtons}>
-                <TouchableOpacity
-                  style={[
-                    styles.languageButton,
-                    { backgroundColor: colors.background, borderColor: colors.border },
-                    language === 'es' && { backgroundColor: colors.primary, borderColor: colors.primary }
-                  ]}
-                  onPress={() => setLanguage('es')}
-                >
-                  <Text style={[
-                    styles.languageButtonText,
-                    { color: colors.text },
-                    language === 'es' && { color: '#FFFFFF' }
-                  ]}>
-                    🇪🇸 Español
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.languageButton,
-                    { backgroundColor: colors.background, borderColor: colors.border },
-                    language === 'en' && { backgroundColor: colors.primary, borderColor: colors.primary }
-                  ]}
-                  onPress={() => setLanguage('en')}
-                >
-                  <Text style={[
-                    styles.languageButtonText,
-                    { color: colors.text },
-                    language === 'en' && { color: '#FFFFFF' }
-                  ]}>
-                    🇺🇸 English
-                  </Text>
-                </TouchableOpacity>
-              </View>
             </View>
           </View>
         </View>

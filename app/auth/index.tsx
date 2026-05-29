@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -28,9 +27,9 @@ export default function LoginScreen() {
       return;
     }
 
-    const success = await login(email, password);
-    if (success) {
-      router.replace('/(tabs)');
+    const loggedInUser = await login(email, password);
+    if (loggedInUser) {
+      router.replace(loggedInUser.role === 'admin' ? '/admin' : '/(tabs)');
     } else {
       Alert.alert('Error', 'Credenciales incorrectas');
     }

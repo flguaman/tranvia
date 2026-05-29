@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { useTheme } from './ThemeContext';
+import { useTheme, Theme, Language } from './ThemeContext';
 
 export interface User {
   id: string;
@@ -7,107 +7,102 @@ export interface User {
   email: string;
   role: 'user' | 'admin';
   avatar?: string;
-  theme?: 'light' | 'dark';
-  language?: 'es' | 'en';
+  theme?: Theme;
+  language?: Language;
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<User | null>;
+  register: (name: string, email: string, password: string) => Promise<User | null>;
   logout: () => void;
   isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const DEMO_USERS: Record<string, { password: string; user: User }> = {
+  'admin@tranvia.cuenca.ec': {
+    password: 'admin123',
+    user: {
+      id: '1',
+      name: 'Administrador',
+      email: 'admin@tranvia.cuenca.ec',
+      role: 'admin',
+      theme: 'dark',
+      language: 'es',
+    },
+  },
+  'usuario@example.com': {
+    password: 'user123',
+    user: {
+      id: '2',
+      name: 'Juan Pérez',
+      email: 'usuario@example.com',
+      role: 'user',
+      theme: 'light',
+      language: 'es',
+    },
+  },
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { setLanguage, toggleTheme, theme } = useTheme();
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    setIsLoading(true);
-    
-    // Simular llamada a API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Credenciales de prueba
-    if (email === 'admin@tranvia.cuenca.ec' && password === 'admin123') {
-      const adminUser = {
-        id: '1',
-        name: 'Administrador',
-        email: 'admin@tranvia.cuenca.ec',
-        role: 'admin' as const,
-        theme: 'dark' as const,
-        language: 'es' as const
-      };
-      
-      // Aplicar configuraciones del usuario
-      if (adminUser.theme !== theme) {
-        toggleTheme();
-      }
-      if (adminUser.language) {
-        setLanguage(adminUser.language);
-      }
-      
-      setUser(adminUser);
-      setIsLoading(false);
-      return true;
-    } else if (email === 'usuario@example.com' && password === 'user123') {
-      const regularUser = {
-        id: '2',
-        name: 'Juan Pérez',
-        email: 'usuario@example.com',
-        role: 'user' as const,
-        theme: 'light' as const,
-        language: 'es' as const
-      };
-      
-      // Aplicar configuraciones del usuario
-      if (regularUser.theme !== theme) {
-        toggleTheme();
-      }
-      if (regularUser.language) {
-        setLanguage(regularUser.language);
-      }
-      
-      setUser(regularUser);
-      setIsLoading(false);
-      return true;
+  const applyUserPreferences = (nextUser: User) => {
+    if (nextUser.theme && nextUser.theme !== theme) {
+      toggleTheme();
     }
-    
-    setIsLoading(false);
-    return false;
+    if (nextUser.language) {
+      setLanguage(nextUser.language);
+    }
   };
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const authenticate = async (nextUser: User): Promise<User> => {
+    applyUserPreferences(nextUser);
+    setUser(nextUser);
+    return nextUser;
+  };
+
+  const login = async (email: string, password: string): Promise<User | null> => {
     setIsLoading(true);
-    
-    // Simular llamada a API
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newUser = {
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const demo = DEMO_USERS[email];
+    if (demo && demo.password === password) {
+      const loggedInUser = await authenticate(demo.user);
+      setIsLoading(false);
+      return loggedInUser;
+    }
+
+    setIsLoading(false);
+    return null;
+  };
+
+  const register = async (
+    name: string,
+    email: string,
+    _password: string
+  ): Promise<User | null> => {
+    setIsLoading(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const newUser: User = {
       id: Math.random().toString(),
       name,
       email,
-      role: 'user' as const,
-      theme: 'light' as const,
-      language: 'es' as const
+      role: 'user',
+      theme: 'light',
+      language: 'es',
     };
-    
-    // Aplicar configuraciones del usuario
-    if (newUser.theme !== theme) {
-      toggleTheme();
-    }
-    if (newUser.language) {
-      setLanguage(newUser.language);
-    }
-    
-    setUser(newUser);
-    
+
+    const loggedInUser = await authenticate(newUser);
     setIsLoading(false);
-    return true;
+    return loggedInUser;
   };
 
   const logout = () => {

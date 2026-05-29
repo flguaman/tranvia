@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Brain as Train, MapPin, Clock, CreditCard, Bell, TrendingUp, Users, Zap, QrCode, Ticket, TriangleAlert as AlertTriangle } from 'lucide-react-native';
