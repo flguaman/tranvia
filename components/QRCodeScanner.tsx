@@ -6,40 +6,46 @@ import {
   TouchableOpacity,
   Alert,
   Platform,
+  Modal,
 } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { X, QrCode, Flashlight, FlashlightOff } from 'lucide-react-native';
 
 interface QRCodeScannerProps {
+  visible: boolean;
   onScan: (data: string) => void;
   onClose: () => void;
   title?: string;
 }
 
-export default function QRCodeScanner({ onScan, onClose, title = "Escanear Código QR" }: QRCodeScannerProps) {
+export default function QRCodeScanner({ visible, onScan, onClose, title = "Escanear Código QR" }: QRCodeScannerProps) {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
   const [flashOn, setFlashOn] = useState(false);
 
   useEffect(() => {
-    if (Platform.OS === 'web') {
+    if (visible && Platform.OS === 'web') {
       Alert.alert(
         'Función no disponible',
         'El escáner QR no está disponible en la versión web. Use la aplicación móvil.',
         [{ text: 'OK', onPress: onClose }]
       );
     }
-  }, []);
+  }, [visible, onClose]);
+
+  if (!visible) return null;
 
   if (Platform.OS === 'web') {
     return (
-      <View style={styles.webContainer}>
-        <QrCode size={64} color="#8B0000" />
-        <Text style={styles.webText}>Escáner QR no disponible en web</Text>
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Text style={styles.closeButtonText}>Cerrar</Text>
-        </TouchableOpacity>
-      </View>
+      <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+        <View style={styles.webContainer}>
+          <QrCode size={64} color="#8B0000" />
+          <Text style={styles.webText}>Escáner QR no disponible en web</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>Cerrar</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     );
   }
 
@@ -66,59 +72,61 @@ export default function QRCodeScanner({ onScan, onClose, title = "Escanear Códi
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
-          <X size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-      </View>
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen" onRequestClose={onClose}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>{title}</Text>
+          <TouchableOpacity style={styles.closeIcon} onPress={onClose}>
+            <X size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
 
-      <CameraView
-        style={styles.camera}
-        facing="back"
-        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
-        barcodeScannerSettings={{
-          barcodeTypes: ['qr'],
-        }}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.scanArea}>
-            <View style={[styles.corner, styles.topLeft]} />
-            <View style={[styles.corner, styles.topRight]} />
-            <View style={[styles.corner, styles.bottomLeft]} />
-            <View style={[styles.corner, styles.bottomRight]} />
+        <CameraView
+          style={styles.camera}
+          facing="back"
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
+          }}
+        >
+          <View style={styles.overlay}>
+            <View style={styles.scanArea}>
+              <View style={[styles.corner, styles.topLeft]} />
+              <View style={[styles.corner, styles.topRight]} />
+              <View style={[styles.corner, styles.bottomLeft]} />
+              <View style={[styles.corner, styles.bottomRight]} />
+            </View>
           </View>
-        </View>
 
-        <View style={styles.controls}>
-          <TouchableOpacity
-            style={styles.flashButton}
-            onPress={() => setFlashOn(!flashOn)}
-          >
-            {flashOn ? (
-              <FlashlightOff size={24} color="#FFFFFF" />
-            ) : (
-              <Flashlight size={24} color="#FFFFFF" />
-            )}
-          </TouchableOpacity>
-        </View>
-      </CameraView>
+          <View style={styles.controls}>
+            <TouchableOpacity
+              style={styles.flashButton}
+              onPress={() => setFlashOn(!flashOn)}
+            >
+              {flashOn ? (
+                <FlashlightOff size={24} color="#FFFFFF" />
+              ) : (
+                <Flashlight size={24} color="#FFFFFF" />
+              )}
+            </TouchableOpacity>
+          </View>
+        </CameraView>
 
-      <View style={styles.instructions}>
-        <Text style={styles.instructionText}>
-          Apunta la cámara hacia el código QR
-        </Text>
-        {scanned && (
-          <TouchableOpacity
-            style={styles.scanAgainButton}
-            onPress={() => setScanned(false)}
-          >
-            <Text style={styles.scanAgainText}>Escanear de nuevo</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.instructions}>
+          <Text style={styles.instructionText}>
+            Apunta la cámara hacia el código QR
+          </Text>
+          {scanned && (
+            <TouchableOpacity
+              style={styles.scanAgainButton}
+              onPress={() => setScanned(false)}
+            >
+              <Text style={styles.scanAgainText}>Escanear de nuevo</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 }
 

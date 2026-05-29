@@ -181,6 +181,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>('es');
   const [isLoaded, setIsLoaded] = useState(false);
 
+  // Manejo seguro de AsyncStorage para evitar errores
   const safeAsyncStorage = {
     getItem: async (key: string) => {
       try {

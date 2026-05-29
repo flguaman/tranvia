@@ -24,27 +24,27 @@ export default function HomeScreen() {
   const [proximityData, setProximityData] = useState({ distance: 0, tramId: '' });
 
   const quickActions = [
-    { 
-      icon: MapPin, 
-      title: 'Ver Mapa', 
+    {
+      icon: MapPin,
+      title: 'Ver Mapa',
       color: '#8B0000',
       action: () => console.log('Navigate to map')
     },
-    { 
-      icon: Clock, 
-      title: 'Horarios', 
+    {
+      icon: Clock,
+      title: 'Horarios',
       color: '#228B22',
       action: () => console.log('Navigate to schedules')
     },
-    { 
-      icon: CreditCard, 
-      title: 'Recargar', 
+    {
+      icon: CreditCard,
+      title: 'Recargar',
       color: '#FF8C00',
       action: () => console.log('Navigate to wallet')
     },
-    { 
-      icon: QrCode, 
-      title: 'Escanear QR', 
+    {
+      icon: QrCode,
+      title: 'Escanear QR',
       color: '#9932CC',
       action: () => setShowQRScanner(true)
     },
@@ -55,7 +55,7 @@ export default function HomeScreen() {
       id: 1,
       title: 'Nueva ruta hacia El Ejido',
       description: 'Ampliaremos el servicio con una nueva estación',
-      image: 'https://images.pexels.com/photos/681467/pexels-photo-681467.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      color: '#8B0000',
       time: 'Hace 2 horas',
       priority: 'high'
     },
@@ -63,7 +63,7 @@ export default function HomeScreen() {
       id: 2,
       title: 'Horarios extendidos los fines de semana',
       description: 'Servicio hasta las 11:00 PM sábados y domingos',
-      image: 'https://images.pexels.com/photos/1106344/pexels-photo-1106344.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      color: '#228B22',
       time: 'Hace 1 día',
       priority: 'medium'
     },
@@ -71,7 +71,7 @@ export default function HomeScreen() {
       id: 3,
       title: 'Mantenimiento programado',
       description: 'Interrupción temporal del servicio el domingo',
-      image: 'https://images.pexels.com/photos/159306/construction-site-build-construction-work-159306.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+      color: '#FF8C00',
       time: 'Hace 3 días',
       priority: 'high'
     },
@@ -136,7 +136,7 @@ export default function HomeScreen() {
               <Text style={styles.subtitle}>Bienvenido al Tranvía de Cuenca</Text>
             </View>
             <View style={styles.headerActions}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.notificationButton}
                 onPress={() => setShowNotifications(true)}
               >
@@ -160,9 +160,9 @@ export default function HomeScreen() {
                 styles.alertCard,
                 alert.type === 'warning' ? styles.warningAlert : styles.infoAlert
               ]}>
-                <AlertTriangle 
-                  size={20} 
-                  color={alert.type === 'warning' ? '#FFC107' : '#17A2B8'} 
+                <AlertTriangle
+                  size={20}
+                  color={alert.type === 'warning' ? '#FFC107' : '#17A2B8'}
                 />
                 <Text style={styles.alertText}>{alert.message}</Text>
               </View>
@@ -175,8 +175,8 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
           <View style={styles.quickActionsGrid}>
             {quickActions.map((action, index) => (
-              <TouchableOpacity 
-                key={index} 
+              <TouchableOpacity
+                key={index}
                 style={styles.quickActionCard}
                 onPress={action.action}
               >
@@ -208,7 +208,7 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>Noticias y Actualizaciones</Text>
           {news.map((item) => (
             <TouchableOpacity key={item.id} style={styles.newsCard}>
-              <Image source={{ uri: item.image }} style={styles.newsImage} />
+              <View style={[styles.newsImage, { backgroundColor: item.color }]} />
               <View style={styles.newsContent}>
                 <View style={styles.newsHeader}>
                   <Text style={styles.newsTitle}>{item.title}</Text>
